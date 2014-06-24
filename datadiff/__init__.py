@@ -66,7 +66,7 @@ def diff(a, b, context=3, depth=0, fromfile='a', tofile='b'):
             raise DiffNotImplementedForType(str)
     if type(a) != type(b) and (isinstance(a, dict) != isinstance(b, dict) or isinstance(a, list) != isinstance(b, list)):
         raise DiffTypeError('Types differ: %s=%s %s=%s  Values of a and b are: %r, %r' % (fromfile, tofile, type(a), type(b), a, b))
-    if isinstance(a, dict):
+    if isinstance(a, dict) and isinstance(b, dict):
         return diff_dict(a, b, context, depth, fromfile=fromfile, tofile=tofile)
     if hasattr(a, 'intersection') and hasattr(a, 'difference'):
         return diff_set(a, b, context, depth, fromfile=fromfile, tofile=tofile)
