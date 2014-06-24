@@ -64,9 +64,9 @@ def diff(a, b, context=3, depth=0, fromfile='a', tofile='b'):
             # even though technically it is a sequence,
             # we don't want to diff char-by-char
             raise DiffNotImplementedForType(str)
-    if type(a) != type(b):
+    if type(a) != type(b) and (isinstance(a, dict) != isinstance(b, dict) or isinstance(a, list) != isinstance(b, list)):
         raise DiffTypeError('Types differ: %s=%s %s=%s  Values of a and b are: %r, %r' % (fromfile, tofile, type(a), type(b), a, b))
-    if type(a) == dict:
+    if isinstance(a, dict):
         return diff_dict(a, b, context, depth, fromfile=fromfile, tofile=tofile)
     if hasattr(a, 'intersection') and hasattr(a, 'difference'):
         return diff_set(a, b, context, depth, fromfile=fromfile, tofile=tofile)
@@ -170,9 +170,9 @@ class DataDiff(object):
 def hashable(s):
     try:
         # convert top-level container
-        if type(s) == list:
+        if isinstance(s, list):
             ret = tuple(s)
-        elif type(s) == dict:
+        elif isinstance(s, dict):
             ret = frozenset(hashable(_) for _ in s.items())
         elif type(s) == set:
             ret = frozenset(s)
@@ -212,7 +212,7 @@ def diff_seq(a, b, context=3, depth=0, fromfile='a', tofile='b'):
     sm = SequenceMatcher(a = hashable_a, b = hashable_b)
     if type(a) == tuple:
         ddiff = DataDiff(tuple, '(', ')', fromfile=fromfile, tofile=tofile)
-    elif type(b) == list:
+    elif isinstance(b, list):
         ddiff = DataDiff(list, '[', ']', fromfile=fromfile, tofile=tofile)
     else:
         ddiff = DataDiff(type(a), fromfile=fromfile, tofile=tofile)
